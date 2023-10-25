@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientHandler extends Thread {
+class ClientHandler extends Thread {
     private Socket clientSocket;
     private PrintWriter out;
 
@@ -34,7 +34,7 @@ public class ClientHandler extends Thread {
                     break;
                 }
                 System.out.println("Received: " + message);
-                ChatServer.broadcastMessage(message, this);
+                ChatServer.broadcastMessage(message, this); // Envía el mensaje al servidor
             }
         } catch (IOException e) {
             e.printStackTrace();

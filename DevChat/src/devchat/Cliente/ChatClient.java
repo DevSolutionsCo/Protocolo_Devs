@@ -4,56 +4,62 @@
  */
 package devchat.Cliente;
 
-/**
- *
- * @author Alumno
- */
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.Base64;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ChatClient {
-    private static final String SERVER_IP = "192.168.100.13"; // Reemplaza con la dirección IP del servidor
+    private static final String SERVER_IP = "192.168.20.71"; // Reemplaza con la dirección IP del servidor
     private static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT)) {
-            System.out.println("conectado al servidor");
+                                        ChatClient obj = new ChatClient();
+
+            System.out.println("Conectado al servidor");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
 
-            String msj1;
-            while (true) {
-                System.out.print("TU: ");
-                
-                
-                
-                msj1 = consoleInput.readLine();
-                ChatClient obj = new ChatClient();
-                
-                
-                out.println(obj.codificar(msj1));
-
-                if ("exit".equalsIgnoreCase(msj1)) {
-                    break;
+            // Hilo para enviar mensajes al servidor
+            Thread sendMessageThread = new Thread(() -> {
+                try {
+                    String userInput;
+                    while (true) {
+                        userInput = consoleInput.readLine();
+                        if ("exit".equalsIgnoreCase(userInput)) {
+                            out.println(userInput);
+                            break;
+                        } else if (!userInput.isEmpty()) {
+                            
+                            
+                            out.println(obj.codificar(userInput));
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            });
 
-                
-                
-                String respuesta = in.readLine();
-                System.out.println("EL OTRO: " + obj.decodificar(respuesta));
+            sendMessageThread.start();
+
+            // Hilo para recibir mensajes del servidor
+            String response;
+            while ((response = in.readLine()) != null) {
+                System.out.println("EL OTRO: " + obj.decodificar(response));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    
-    public String codificar(String msj){
+
+
+
+ public String codificar(String msj){
         int claveCesar = 5;
         
 

@@ -8,22 +8,21 @@ package devchat.Server;
  *
  * @author javi
  */
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChatServer {
     private static final int PORT = 12345;
-    private static List<ClientHandler> clients = new ArrayList<>();
+    private static CopyOnWriteArrayList<ClientHandler> clients = new CopyOnWriteArrayList<>();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("server conectado, conectate a: " + PORT);
+            System.out.println("Servidor conectado, conectate a: " + PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("nuevo usuario");
+                System.out.println("Nuevo usuario");
                 ClientHandler client = new ClientHandler(clientSocket);
                 clients.add(client);
                 client.start();
